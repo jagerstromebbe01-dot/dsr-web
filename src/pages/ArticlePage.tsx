@@ -138,9 +138,33 @@ export function ArticlePage() {
 
       <hr />
 
-      <div className="example-placeholder">
+      <div className="worked-example">
         <h2>A worked example from my own research</h2>
-        <p><em>[Space reserved — to be filled in by the site owner with a real example.]</em></p>
+        <p>
+          I ran a research project where I committed to a fixed methodology from start to finish:
+        </p>
+        <ul>
+          <li>I pre-registered 109 hypotheses, each with a locked approval criterion, before seeing any results.</li>
+          <li>I corrected every result using the Deflated Sharpe Ratio.</li>
+          <li>
+            I used git history to log everything and to make sure the methodology was actually followed.
+          </li>
+        </ul>
+        <p>
+          The DSR analysis gave an acceptance rate of 19 out of 109. I wasn't satisfied with stopping there, so I
+          went back and audited how I had actually worked. I found that many hypotheses had been built on top of
+          hypotheses that were already approved. In other words, the tests were not independent — and independence
+          is an assumption DSR relies on.
+        </p>
+        <p>
+          To handle this, I re-ran the analysis for the 19 DSR-approved hypothesis with a different multiple-testing
+          correction, alpha-investing, which explicitly takes into account the order in which the tests were run. 18
+          of the 19 held up; one hypothesis (HYP-053) was rejected.
+        </p>
+        <p>
+          My takeaway: even a careful researcher is fully capable of tripping up themselves and their own project.
+          The number of trials is only part of the truth.
+        </p>
       </div>
 
       <Disclaimer />
