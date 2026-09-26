@@ -36,7 +36,7 @@ export function buildEvaporationCurveGeometry(params: {
   const { sqrtV, nTrials, observedSR } = params;
   const width = params.width ?? 700;
   const height = params.height ?? 400;
-  const padding = { top: 24, right: 24, bottom: 48, left: 56 };
+  const padding = { top: 24, right: 24, bottom: 56, left: 92 };
 
   const nMin = 1;
   // Show at least an order of magnitude past the user's own N so the
@@ -77,4 +77,19 @@ export function curveToSvgPath(geometry: CurveGeometry): string {
   return geometry.points
     .map((p, i) => `${i === 0 ? "M" : "L"} ${geometry.xForN(p.n)} ${geometry.yForSr(p.srStar)}`)
     .join(" ");
+}
+
+/** Picks a small, fixed number of log-spaced tick values between nMin
+ * and nMax - keeps axis labels readable on narrow (mobile) viewports
+ * regardless of how wide the underlying N range is. */
+export function pickLogTicks(nMin: number, nMax: number, maxTicks = 5): number[] {
+  if (nMax <= nMin) return [nMin];
+  const logMin = Math.log10(nMin);
+  const logMax = Math.log10(nMax);
+  const ticks = new Set<number>();
+  for (let i = 0; i < maxTicks; i++) {
+    const logN = logMin + (i / (maxTicks - 1)) * (logMax - logMin);
+    ticks.add(Math.max(1, Math.round(10 ** logN)));
+  }
+  return Array.from(ticks).sort((a, b) => a - b);
 }

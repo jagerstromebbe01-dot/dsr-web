@@ -13,6 +13,8 @@
   --error-bg: #3a1414;
   --error-border: #7c1e1e;
   --success: #34d399;
+  --tier-yellow: #fbbf24;
+  --tier-red: #f87171;
 
   font-family: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   line-height: 1.5;

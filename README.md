@@ -15,8 +15,11 @@ entered into the calculator is ever sent to a server.
 - `src/pages/ArticlePage.tsx` — "Why your backtest is probably lying".
 - `src/lib/dsr.test.ts` — Vitest unit tests, including a cross-check against
   an external Python reference implementation (see below).
-- `tools/` — one-off Python scripts used only to generate the test fixtures
-  in `tools/reference_values*.json`. Not part of the shipped site.
+- `tools/` — one-off Python scripts: `gen_reference_values*.py` generate the
+  test fixtures in `tools/reference_values*.json`, `gen_og_image.py`
+  generates `public/og-image.png` (requires Pillow and Windows fonts — only
+  needs rerunning if the share image's design changes). None of these are
+  part of the shipped site.
 
 ## Running locally
 

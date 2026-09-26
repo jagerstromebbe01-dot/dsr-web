@@ -174,8 +174,16 @@ textarea {
   margin-top: 2px;
 }
 
-.result-value.highlight {
+.result-value.tier-green {
   color: var(--success);
+}
+
+.result-value.tier-yellow {
+  color: var(--tier-yellow);
+}
+
+.result-value.tier-red {
+  color: var(--tier-red);
 }
 
 .interpretation {
@@ -205,12 +213,12 @@ textarea {
 
 .chart-axis-label {
   fill: var(--text-muted);
-  font-size: 11px;
+  font-size: 18px;
 }
 
 .chart-axis-title {
   fill: var(--text-muted);
-  font-size: 12px;
+  font-size: 17px;
 }
 
 .chart-curve {

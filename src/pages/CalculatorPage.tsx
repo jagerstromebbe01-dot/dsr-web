@@ -19,6 +19,7 @@ import {
   validateVariance,
 } from "../lib/validation";
 import { interpretDsr } from "../lib/interpret";
+import { dsrTier } from "../lib/color";
 import { EvaporationCurve } from "../components/EvaporationCurve";
 import { Disclaimer } from "../components/Disclaimer";
 import { canvasToDownloadUrl, renderShareImage } from "../lib/shareImage";
@@ -50,10 +51,10 @@ export function CalculatorPage() {
   const [customPeriodsPerYear, setCustomPeriodsPerYear] = useState("252");
 
   const [srInputMode, setSrInputMode] = useState<SrInputMode>("annualized");
-  const [srInputValue, setSrInputValue] = useState("1.0");
+  const [srInputValue, setSrInputValue] = useState("1.5");
 
-  const [nObsInput, setNObsInput] = useState("500");
-  const [nTrialsInput, setNTrialsInput] = useState("1");
+  const [nObsInput, setNObsInput] = useState("1260");
+  const [nTrialsInput, setNTrialsInput] = useState("50");
 
   const [skewInput, setSkewInput] = useState("0");
   const [kurtInput, setKurtInput] = useState("3");
@@ -155,9 +156,10 @@ export function CalculatorPage() {
     if (!result) return;
     try {
       const canvas = renderShareImage({
-        observedSR: srAnnualized,
+        observedSR: srPerPeriod,
         nTrials,
         sqrtV: Math.sqrt(result.vUsed),
+        periodsPerYear,
         benchmarkSR: result.benchmarkSR,
         deflatedSharpeRatio: result.deflatedSharpeRatio,
         frequencyLabel: FREQUENCY_LABELS[frequency],
@@ -364,16 +366,22 @@ export function CalculatorPage() {
           <h2>Result</h2>
           <div className="result-grid">
             <div>
-              <span className="result-label">Raw Sharpe (per period)</span>
-              <span className="result-value">{srPerPeriod.toFixed(6)}</span>
+              <span className="result-label">Raw Sharpe (per period / annualized)</span>
+              <span className="result-value">
+                {srPerPeriod.toFixed(6)} / {srAnnualized.toFixed(2)}
+              </span>
             </div>
             <div>
-              <span className="result-label">Deflated benchmark SR*₀</span>
-              <span className="result-value">{result.benchmarkSR.toFixed(6)}</span>
+              <span className="result-label">Deflated benchmark SR*₀ (per period / annualized)</span>
+              <span className="result-value">
+                {result.benchmarkSR.toFixed(6)} / {(result.benchmarkSR * Math.sqrt(periodsPerYear)).toFixed(2)}
+              </span>
             </div>
             <div>
               <span className="result-label">Deflated Sharpe Ratio (DSR)</span>
-              <span className="result-value highlight">{(result.deflatedSharpeRatio * 100).toFixed(2)}%</span>
+              <span className={`result-value tier-${dsrTier(result.deflatedSharpeRatio)}`}>
+                {(result.deflatedSharpeRatio * 100).toFixed(2)}%
+              </span>
             </div>
             <div>
               <span className="result-label">V used {result.vWasApproximated ? "(approximated)" : "(measured)"}</span>
@@ -382,7 +390,12 @@ export function CalculatorPage() {
           </div>
 
           <p className="interpretation">
-            {interpretDsr({ dsr: result.deflatedSharpeRatio, nTrials, observedSRAnnualized: srAnnualized })}
+            {interpretDsr({
+              dsr: result.deflatedSharpeRatio,
+              nTrials,
+              observedSRAnnualized: srAnnualized,
+              benchmarkSRAnnualized: result.benchmarkSR * Math.sqrt(periodsPerYear),
+            })}
           </p>
 
           <h3>Evaporation curve</h3>
@@ -391,11 +404,12 @@ export function CalculatorPage() {
             nTrials={nTrials}
             observedSR={srPerPeriod}
             benchmarkSR={result.benchmarkSR}
+            periodsPerYear={periodsPerYear}
           />
           <p className="hint">
-            The curve shows how the deflation benchmark SR*₀ rises as more strategies are tried (N). The vertical line
-            marks your own N; the orange dot is where your observed Sharpe sits, the blue dot is the benchmark at
-            that N.
+            The curve shows how the deflation benchmark SR*₀ rises as more strategies are tried (N), in annualized
+            terms. The vertical line marks your own N; the green dot is where your observed Sharpe sits, the blue dot
+            is the benchmark at that N.
           </p>
 
           <div className="share-row">

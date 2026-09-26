@@ -10,11 +10,16 @@
  */
 
 import { buildEvaporationCurveGeometry } from "./evaporationCurve";
+import { DSR_TIER_COLORS, dsrTier } from "./color";
 
 export interface ShareImageParams {
+  /** Per-period Sharpe (not annualized) - this function annualizes it
+   * internally using periodsPerYear, same as the on-page chart. */
   observedSR: number;
   nTrials: number;
+  /** Per-period sqrt(V) - annualized internally, same as observedSR. */
   sqrtV: number;
+  periodsPerYear: number;
   benchmarkSR: number;
   deflatedSharpeRatio: number;
   frequencyLabel: string;
@@ -47,16 +52,22 @@ export function renderShareImage(params: ShareImageParams): HTMLCanvasElement {
   ctx.lineTo(WIDTH - 48, 96);
   ctx.stroke();
 
+  const tier = dsrTier(params.deflatedSharpeRatio);
+  const tierColor = DSR_TIER_COLORS[tier];
+  const annualizeFactor = Math.sqrt(params.periodsPerYear);
+  const observedSRAnnualized = params.observedSR * annualizeFactor;
+  const sqrtVAnnualized = params.sqrtV * annualizeFactor;
+
   // Stat blocks
-  const stats: Array<[string, string]> = [
-    ["Raw Sharpe (per period)", params.observedSR.toFixed(4)],
+  const stats: Array<[string, string, string?]> = [
+    ["Raw Sharpe (annualized)", observedSRAnnualized.toFixed(2)],
     ["Data frequency", params.frequencyLabel],
     ["Number of trials (N)", params.nTrials.toLocaleString("en-US")],
-    ["Deflated Sharpe Ratio", `${(params.deflatedSharpeRatio * 100).toFixed(1)}%`],
+    ["Deflated Sharpe Ratio", `${(params.deflatedSharpeRatio * 100).toFixed(1)}%`, tierColor],
   ];
 
   const colWidth = (WIDTH - 96) / 2;
-  stats.forEach(([label, value], i) => {
+  stats.forEach(([label, value, color], i) => {
     const col = i % 2;
     const row = Math.floor(i / 2);
     const x = 48 + col * colWidth;
@@ -66,21 +77,21 @@ export function renderShareImage(params: ShareImageParams): HTMLCanvasElement {
     ctx.font = "20px system-ui, -apple-system, sans-serif";
     ctx.fillText(label, x, y);
 
-    ctx.fillStyle = "#f4f4f5";
+    ctx.fillStyle = color ?? "#f4f4f5";
     ctx.font = "bold 34px system-ui, -apple-system, sans-serif";
     ctx.fillText(value, x, y + 38);
   });
 
-  // Mini evaporation curve
+  // Mini evaporation curve (annualized, matching the on-page chart)
   const chartX = 48;
   const chartY = 340;
   const chartW = WIDTH - 96;
   const chartH = 260;
 
   const geometry = buildEvaporationCurveGeometry({
-    sqrtV: params.sqrtV,
+    sqrtV: sqrtVAnnualized,
     nTrials: params.nTrials,
-    observedSR: params.observedSR,
+    observedSR: observedSRAnnualized,
     width: chartW,
     height: chartH,
   });
@@ -104,8 +115,8 @@ export function renderShareImage(params: ShareImageParams): HTMLCanvasElement {
   ctx.stroke();
 
   const userX = geometry.xForN(params.nTrials);
-  const userY = geometry.yForSr(params.observedSR);
-  ctx.fillStyle = "#f59e0b";
+  const userY = geometry.yForSr(observedSRAnnualized);
+  ctx.fillStyle = tierColor;
   ctx.beginPath();
   ctx.arc(userX, userY, 6, 0, Math.PI * 2);
   ctx.fill();
