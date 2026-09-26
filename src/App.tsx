@@ -39,7 +39,7 @@ function App() {
       <footer className="app-footer">
         <p>
           Your numbers never leave your browser. All calculations run locally in JavaScript — nothing you enter is
-          sent to a server, stored, or tracked.
+          sent to a server or stored. No cookies. We only count anonymous page views (Cloudflare Web Analytics).
         </p>
       </footer>
     </div>

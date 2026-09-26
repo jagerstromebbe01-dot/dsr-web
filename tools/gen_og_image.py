@@ -70,7 +70,7 @@ def main() -> None:
 
     tag_lines = [
         "Your numbers never leave your browser.",
-        "No signup. No tracking. Not investment advice.",
+        "No cookies. No signup.",
     ]
     ty = 380
     for line in tag_lines:
