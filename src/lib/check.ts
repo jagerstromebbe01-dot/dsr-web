@@ -18,12 +18,11 @@ import {
   skewness,
 } from "./dsr";
 import type { DataFrequency } from "./dsr";
+import { verdictFromDsr } from "./thresholds";
+import type { Verdict } from "./thresholds";
 
-export type Verdict = "green" | "yellow" | "red";
-
-/** DSR >= GREEN_THRESHOLD is green, >= YELLOW_THRESHOLD is yellow, below is red. */
-export const GREEN_THRESHOLD = 0.95;
-export const YELLOW_THRESHOLD = 0.5;
+export type { Verdict } from "./thresholds";
+export { verdictFromDsr } from "./thresholds";
 
 /** Below this many observations a warning is added. */
 export const MIN_RECOMMENDED_T = 60;
@@ -65,12 +64,6 @@ export class CheckInputError extends Error {
     super(message);
     this.name = "CheckInputError";
   }
-}
-
-export function verdictFromDsr(dsr: number): Verdict {
-  if (dsr >= GREEN_THRESHOLD) return "green";
-  if (dsr >= YELLOW_THRESHOLD) return "yellow";
-  return "red";
 }
 
 export function periodsPerYearFor(frequency: DataFrequency, custom?: number): number {

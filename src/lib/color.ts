@@ -1,12 +1,12 @@
+import { verdictFromDsr } from "./thresholds";
+import type { Verdict } from "./thresholds";
+
 /** Tiering used to color-code a DSR result consistently across the UI
- * and the shareable PNG: >=95% is strong evidence, 80-95% is weak,
- * below 80% is not distinguishable from luck. */
-export type DsrTier = "green" | "yellow" | "red";
+ * and the shareable PNG. The cut-offs live in thresholds.ts. */
+export type DsrTier = Verdict;
 
 export function dsrTier(dsr: number): DsrTier {
-  if (dsr >= 0.95) return "green";
-  if (dsr >= 0.8) return "yellow";
-  return "red";
+  return verdictFromDsr(dsr);
 }
 
 /** Hex values matching the CSS custom properties in index.css/App.css
