@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { CheckPage } from "./pages/CheckPage";
 import { CalculatorPage } from "./pages/CalculatorPage";
 import { ArticlePage } from "./pages/ArticlePage";
+import { ApiPage } from "./pages/ApiPage";
 import { NotFoundPage } from "./pages/NotFoundPage";
 import { LEGACY_HASHES, NOT_FOUND_META, ROUTES, findRoute, normalizePath } from "./routes";
 import "./App.css";
@@ -14,6 +15,8 @@ function PageFor({ path }: { path: string }) {
       return <CalculatorPage />;
     case "/article":
       return <ArticlePage />;
+    case "/api":
+      return <ApiPage />;
     default:
       return <NotFoundPage />;
   }

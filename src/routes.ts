@@ -37,6 +37,13 @@ export const ROUTES: RouteMeta[] = [
     description:
       "Why the best backtest out of many is usually luck, how the Deflated Sharpe Ratio corrects for it, and a worked example with real numbers.",
   },
+  {
+    path: "/api",
+    label: "API",
+    title: "Backtest Check API — Free Deflated Sharpe Ratio JSON API",
+    description:
+      "Free JSON API that checks whether a backtest's Sharpe ratio is probably real or luck, using the Deflated Sharpe Ratio. curl and Python examples. No API key.",
+  },
 ];
 
 export const NOT_FOUND_META = {
