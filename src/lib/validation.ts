@@ -27,10 +27,34 @@ export function validateSharpe(sr: number, label = "Sharpe ratio"): string | nul
   return null;
 }
 
+/** Takes kurtosis in the NON-EXCESS convention (normal = 3). Mathematically
+ * kurtosis can never be below 1 (excess: -2), so anything lower is a typo
+ * or a convention mix-up. */
 export function validateKurtosis(kurt: number): string | null {
   if (!Number.isFinite(kurt)) return "Kurtosis must be a number.";
-  if (kurt <= 0) return "Kurtosis must be positive.";
+  if (kurt < 1) {
+    return "Kurtosis cannot be below 1 (non-excess convention, normal = 3) — equivalent to −2 in the excess convention (normal = 0). Check the value and the convention you selected.";
+  }
   return null;
+}
+
+/** Parses the skewness text field. An empty field means 0 (normal
+ * distribution) and is flagged via `note` so the UI can say so; anything
+ * else that is not a finite number is an error instead of silently 0. */
+export function parseSkewInput(raw: string): {
+  value: number;
+  error: string | null;
+  note: string | null;
+} {
+  const trimmed = raw.trim();
+  if (trimmed === "") {
+    return { value: 0, error: null, note: "Skewness field is empty — using 0 (symmetric, like a normal distribution)." };
+  }
+  const value = Number(trimmed);
+  if (!Number.isFinite(value)) {
+    return { value: NaN, error: "Skewness must be a number (e.g. -0.4 or 0.2).", note: null };
+  }
+  return { value, error: null, note: null };
 }
 
 /** Checks the term under the square root in the PSR denominator stays

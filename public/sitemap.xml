@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <!-- The site is a single page with hash-based views (#check, #calculator, #article).
+       Search engines ignore URL fragments, so only the root URL is listed. -->
+  <url>
+    <loc>https://dsr-web.pages.dev/</loc>
+  </url>
+</urlset>

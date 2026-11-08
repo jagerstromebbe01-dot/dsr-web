@@ -17,6 +17,7 @@ import {
   validatePastedSharpeCount,
   validateSharpe,
   validateVariance,
+  parseSkewInput,
 } from "../lib/validation";
 import { interpretDsr } from "../lib/interpret";
 import { dsrTier } from "../lib/color";
@@ -76,7 +77,8 @@ export function CalculatorPage() {
 
   const nObs = Number(nObsInput);
   const nTrials = Number(nTrialsInput);
-  const skew = Number(skewInput) || 0;
+  const skewParsed = parseSkewInput(skewInput);
+  const skew = skewParsed.value;
   const kurtRaw = Number(kurtInput);
   const kurt = kurtConvention === "excess" ? excessKurtosisToNonExcess(kurtRaw) : kurtRaw;
 
@@ -108,13 +110,15 @@ export function CalculatorPage() {
   if (errNTrials) errors.push(errNTrials);
   if (errSharpe) errors.push(errSharpe);
   if (errKurt) errors.push(errKurt);
-  if (!errNObs && !errKurt) {
+  if (skewParsed.error) errors.push(skewParsed.error);
+  if (!errNObs && !errKurt && !skewParsed.error) {
     const errDenom = validateDenominator(srPerPeriod, skew, kurt);
     if (errDenom) errors.push(errDenom);
   }
 
   let varianceOfTrialSharpes: number | undefined;
   const warnings: string[] = [];
+  if (skewParsed.note) warnings.push(skewParsed.note);
 
   if (vMode === "measured") {
     if (vMeasuredMode === "direct") {

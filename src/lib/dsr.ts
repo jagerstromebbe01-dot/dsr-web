@@ -12,7 +12,7 @@
 
 import { normCdf, normPpf } from "./normal";
 
-export const EULER_MASCHERONI = 0.5772156649015328606;
+export const EULER_MASCHERONI = 0.5772156649015329;
 
 export type DataFrequency = "daily" | "daily_crypto" | "weekly" | "monthly" | "custom";
 
