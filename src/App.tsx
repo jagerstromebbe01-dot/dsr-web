@@ -1,12 +1,16 @@
 import { useEffect, useState } from "react";
 import { CalculatorPage } from "./pages/CalculatorPage";
+import { CheckPage } from "./pages/CheckPage";
 import { ArticlePage } from "./pages/ArticlePage";
 import "./App.css";
 
-type Route = "calculator" | "article";
+type Route = "check" | "calculator" | "article";
 
 function routeFromHash(): Route {
-  return window.location.hash === "#article" ? "article" : "calculator";
+  const hash = window.location.hash;
+  if (hash === "#article") return "article";
+  if (hash === "#calculator") return "calculator";
+  return "check";
 }
 
 function App() {
@@ -21,10 +25,13 @@ function App() {
   return (
     <div className="app-shell">
       <header className="app-header">
-        <a href="#calculator" className="brand">
+        <a href="#check" className="brand">
           Backtest Overfitting Calculator
         </a>
         <nav>
+          <a href="#check" className={route === "check" ? "active" : ""}>
+            Backtest check
+          </a>
           <a href="#calculator" className={route === "calculator" ? "active" : ""}>
             Calculator
           </a>
@@ -34,7 +41,7 @@ function App() {
         </nav>
       </header>
 
-      <main className="app-main">{route === "article" ? <ArticlePage /> : <CalculatorPage />}</main>
+      <main className="app-main">{route === "article" ? <ArticlePage /> : route === "calculator" ? <CalculatorPage /> : <CheckPage />}</main>
 
       <footer className="app-footer">
         <p>

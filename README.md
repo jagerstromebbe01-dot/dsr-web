@@ -7,6 +7,10 @@ entered into the calculator is ever sent to a server.
 ## What's here
 
 - `src/lib/dsr.ts` — the core math (PSR, the deflation benchmark SR*₀, DSR).
+- `src/lib/check.ts` — pure "backtest check": raw returns + N → DSR and a
+  green/yellow/red verdict (no React, reusable in a future API).
+- `src/lib/parseReturns.ts` — parsing of pasted text / CSV return series.
+- `src/pages/CheckPage.tsx` — the backtest-check UI (default page, `#check`).
 - `src/lib/normal.ts` — dependency-free standard normal CDF / inverse CDF.
 - `src/lib/evaporationCurve.ts` — shared chart geometry (used by both the
   on-page SVG chart and the shareable PNG, so they can't drift apart).
