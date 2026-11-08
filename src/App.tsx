@@ -27,8 +27,8 @@ function App({ initialPath }: { initialPath: string }) {
   useEffect(() => {
     const legacy = LEGACY_HASHES[window.location.hash];
     if (legacy) {
-      window.history.replaceState(null, "", legacy);
-      setPath(legacy);
+      window.location.replace(legacy);
+      return;
     }
 
     const onPopState = () => setPath(normalizePath(window.location.pathname));
