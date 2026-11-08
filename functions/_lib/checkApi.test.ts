@@ -34,7 +34,10 @@ describe("POST /api/check", () => {
     expect(res.status).toBe(200);
     const body = await res.json();
     const expected = runBacktestCheck({ returns, frequency: "daily", nTrials: 20 });
-    expect(body).toEqual(JSON.parse(JSON.stringify(expected)));
+    const { shareUrl, badgeMarkdown, ...core } = body;
+    expect(core).toEqual(JSON.parse(JSON.stringify(expected)));
+    expect(shareUrl).toBeNull(); // no SHARE_SECRET in this test env
+    expect(badgeMarkdown).toBeNull();
     expect(body.verdict).toMatch(/green|yellow|red/);
   });
 

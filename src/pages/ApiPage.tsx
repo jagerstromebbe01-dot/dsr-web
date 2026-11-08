@@ -35,7 +35,9 @@ const RESPONSE_EXAMPLE = `{
   "vUsed": 0.00199,
   "benchmarkSR": 0.085,
   "periodsPerYear": 252,
-  "warnings": ["V (the spread of Sharpe ratios ...) is estimated ..."]
+  "warnings": ["V (the spread of Sharpe ratios ...) is estimated ..."],
+  "shareUrl": "https://dsr-web.pages.dev/r?dsr=0.1010&verdict=red&...&sig=...",
+  "badgeMarkdown": "[![DSR check](https://dsr-web.pages.dev/badge.svg?...)](https://dsr-web.pages.dev/r?...)"
 }`;
 
 export function ApiPage() {
@@ -98,6 +100,14 @@ export function ApiPage() {
           <code>warnings</code> — things worth knowing, e.g. a short series or returns that look like percentages.
         </li>
       </ul>
+
+      <h2>Share link and badge</h2>
+      <p>
+        Every response includes a signed <code>shareUrl</code> and ready-made <code>badgeMarkdown</code> for a GitHub
+        README. The link carries only a summary (DSR, verdict, annualized Sharpe, skewness, kurtosis, T, N, whether V was
+        estimated) — never your returns. It is signed by this site, so nobody can invent a &quot;verified&quot; result:
+        a link that is altered or unsigned is shown as <em>unverified</em>.
+      </p>
 
       <h2>Errors</h2>
       <ul>

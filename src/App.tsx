@@ -91,8 +91,10 @@ function App({ initialPath }: { initialPath: string }) {
 
       <footer className="app-footer">
         <p>
-          Your numbers never leave your browser. All calculations run locally in JavaScript — nothing you enter is
-          sent to a server or stored. No cookies. We only count anonymous page views (Cloudflare Web Analytics).
+          Your numbers stay in your browser. All calculations run locally in JavaScript — nothing you enter is sent
+          to a server or stored, with one exception: if you click “Copy share link” or “Copy README badge”, your
+          returns are sent once so the server can sign the result (not stored, not logged). The public API works the
+          same way. No cookies. We only count anonymous page views (Cloudflare Web Analytics).
         </p>
       </footer>
     </div>

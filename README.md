@@ -74,6 +74,24 @@ python gen_reference_values_v_measured.py
 
 Both scripts only ever write inside `tools/` in this repo.
 
+## API, share links and badge (Cloudflare Pages Functions)
+
+- `functions/api/check.ts` + `functions/_lib/checkApi.ts` — `POST /api/check`
+  (reuses `runBacktestCheck`, 1 MB / 100,000-value limit, 30 requests/min/IP
+  in-memory rate limit, open CORS). Returns are never stored or logged.
+- `functions/r.ts`, `functions/badge.svg.ts`, `functions/_lib/shareApi.ts` —
+  signed result page `/r?...` and SVG badge `/badge.svg?...`.
+- `src/lib/share.ts` — HMAC-SHA256 signing of the result summary.
+- Needs ONE secret, `SHARE_SECRET`, set in the Cloudflare dashboard (never in
+  the repo): Workers & Pages → dsr-web → Settings → Variables and Secrets →
+  Add → type **Secret**. Without it the API still works but returns
+  `shareUrl: null`, and every link is shown as "unverified".
+- Local full-stack test: `npm run build`, create `.dev.vars` containing
+  `SHARE_SECRET=anything-for-local-testing` (gitignored), then
+  `npx wrangler@4 pages dev dist` and open http://localhost:8788.
+- The build prerenders every page to static HTML (`scripts/prerender.mjs`),
+  so crawlers that don't run JavaScript see the text.
+
 ## Deploying for free
 
 ### Option A: Cloudflare Pages

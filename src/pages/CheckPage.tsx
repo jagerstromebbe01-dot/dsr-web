@@ -75,6 +75,11 @@ export function CheckPage() {
   const [shareUrl, setShareUrl] = useState<string | null>(null);
   const [shareError, setShareError] = useState<string | null>(null);
 
+  // Signed share link / README badge (created by the server, see /api/check).
+  const [links, setLinks] = useState<{ key: string; shareUrl: string; badgeMarkdown: string } | null>(null);
+  const [linkBusy, setLinkBusy] = useState(false);
+  const [linkMsg, setLinkMsg] = useState<{ kind: "ok" | "error"; text: string; manual?: string } | null>(null);
+
   const parsed: ParsedNumbers = useMemo(() => {
     if (file) return extractColumn(file.table, fileColumn);
     return parseReturnsText(text);
@@ -155,6 +160,51 @@ export function CheckPage() {
     }
   }
 
+  /** Asks the server for signed links (it recomputes the result from the
+   * returns so it can vouch for the numbers), then copies the chosen text. */
+  async function copyLink(kind: "link" | "badge") {
+    if (!result) return;
+    setLinkMsg(null);
+    const key = `${result.dsr}|${result.T}|${result.N}`;
+    let data = links && links.key === key ? links : null;
+    if (!data) {
+      setLinkBusy(true);
+      try {
+        const res = await fetch("/api/check", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            returns: parsed.values,
+            frequency,
+            customPeriodsPerYear: frequency === "custom" ? Number(customPeriods) : undefined,
+            n: result.N,
+            v: vInput.trim() === "" ? undefined : Number(vInput),
+          }),
+        });
+        const json = await res.json();
+        if (!res.ok) throw new Error(json.error ?? `Server answered ${res.status}`);
+        if (!json.shareUrl) {
+          setLinkMsg({ kind: "error", text: "Share links are not enabled on this server yet." });
+          return;
+        }
+        data = { key, shareUrl: json.shareUrl, badgeMarkdown: json.badgeMarkdown };
+        setLinks(data);
+      } catch (e) {
+        setLinkMsg({ kind: "error", text: `Could not create the link: ${e instanceof Error ? e.message : "network error"}` });
+        return;
+      } finally {
+        setLinkBusy(false);
+      }
+    }
+    const text = kind === "link" ? data.shareUrl : data.badgeMarkdown;
+    try {
+      await navigator.clipboard.writeText(text);
+      setLinkMsg({ kind: "ok", text: kind === "link" ? "Share link copied." : "README badge code copied." });
+    } catch {
+      setLinkMsg({ kind: "ok", text: "Could not copy automatically. Copy it from here:", manual: text });
+    }
+  }
+
   const verdict = result ? VERDICT_TEXT[result.verdict] : null;
   // The "V is estimated" warning is already explained in its own note above.
   const extraWarnings = result ? result.warnings.filter((w) => !w.startsWith("V (")) : [];
@@ -171,8 +221,9 @@ export function CheckPage() {
           red answer based on the Deflated Sharpe Ratio (Bailey &amp; López de Prado, 2014).
         </p>
         <p className="hint note">
-          <strong>Your data never leaves your computer.</strong> Everything is calculated in your browser; nothing is
-          uploaded or stored.
+          <strong>Your data stays on your computer.</strong> Everything is calculated in your browser; nothing is
+          uploaded or stored. The only exception: if you click “Copy share link” or “Copy README badge”, your returns
+          are sent to our server once so it can sign the result (not stored, not logged).
         </p>
 
         <h3>1. Your returns</h3>
@@ -359,6 +410,33 @@ export function CheckPage() {
             The curve shows how the Sharpe ratio needed to beat luck rises as more strategies are tried (N), in
             annualized terms. The vertical line marks your N.
           </p>
+
+          <h3>Share this result</h3>
+          <div className="share-row">
+            <button onClick={() => copyLink("link")} disabled={linkBusy}>
+              Copy share link
+            </button>
+            <button onClick={() => copyLink("badge")} disabled={linkBusy}>
+              Copy README badge
+            </button>
+            {linkBusy && <span className="hint">Creating link…</span>}
+          </div>
+          <p className="hint">
+            <strong>Heads-up:</strong> to create a link that others can trust, your return series is sent to our server
+            once so it can re-check the numbers and sign them. It is not stored or logged, and the link contains only
+            the summary (DSR, Sharpe, skewness, kurtosis, T, N) — never your returns. Nothing is sent unless you click
+            one of these two buttons.
+          </p>
+          {linkMsg && <p className={linkMsg.kind === "error" ? "error-text" : "hint"}>{linkMsg.text}</p>}
+          {linkMsg?.manual && (
+            <input
+              readOnly
+              value={linkMsg.manual}
+              onFocus={(e) => e.currentTarget.select()}
+              aria-label="Text to copy"
+              style={{ width: "100%" }}
+            />
+          )}
 
           <div className="share-row">
             <button onClick={handleShareImage}>Generate shareable image</button>
