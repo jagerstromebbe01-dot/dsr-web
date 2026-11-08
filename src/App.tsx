@@ -1,47 +1,90 @@
 import { useEffect, useState } from "react";
-import { CalculatorPage } from "./pages/CalculatorPage";
 import { CheckPage } from "./pages/CheckPage";
+import { CalculatorPage } from "./pages/CalculatorPage";
 import { ArticlePage } from "./pages/ArticlePage";
+import { NotFoundPage } from "./pages/NotFoundPage";
+import { LEGACY_HASHES, NOT_FOUND_META, ROUTES, findRoute, normalizePath } from "./routes";
 import "./App.css";
 
-type Route = "check" | "calculator" | "article";
-
-function routeFromHash(): Route {
-  const hash = window.location.hash;
-  if (hash === "#article") return "article";
-  if (hash === "#calculator") return "calculator";
-  return "check";
+function PageFor({ path }: { path: string }) {
+  switch (path) {
+    case "/":
+      return <CheckPage />;
+    case "/calculator":
+      return <CalculatorPage />;
+    case "/article":
+      return <ArticlePage />;
+    default:
+      return <NotFoundPage />;
+  }
 }
 
-function App() {
-  const [route, setRoute] = useState<Route>(routeFromHash());
+/** `initialPath` is the path the page was (pre)rendered for. */
+function App({ initialPath }: { initialPath: string }) {
+  const [path, setPath] = useState(initialPath);
 
+  // Old #hash links -> real addresses; back/forward; in-app link clicks.
   useEffect(() => {
-    const onHashChange = () => setRoute(routeFromHash());
-    window.addEventListener("hashchange", onHashChange);
-    return () => window.removeEventListener("hashchange", onHashChange);
+    const legacy = LEGACY_HASHES[window.location.hash];
+    if (legacy) {
+      window.history.replaceState(null, "", legacy);
+      setPath(legacy);
+    }
+
+    const onPopState = () => setPath(normalizePath(window.location.pathname));
+
+    const onClick = (e: MouseEvent) => {
+      if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+      const anchor = (e.target as Element | null)?.closest?.("a");
+      if (!anchor || anchor.target || anchor.hasAttribute("download")) return;
+      const href = anchor.getAttribute("href");
+      if (!href || !href.startsWith("/") || href.startsWith("//")) return;
+      const next = normalizePath(href);
+      if (!findRoute(next)) return; // not one of our pages (e.g. /api): let the browser load it
+      e.preventDefault();
+      window.history.pushState(null, "", next);
+      setPath(next);
+      window.scrollTo(0, 0);
+    };
+
+    window.addEventListener("popstate", onPopState);
+    document.addEventListener("click", onClick);
+    return () => {
+      window.removeEventListener("popstate", onPopState);
+      document.removeEventListener("click", onClick);
+    };
   }, []);
+
+  // Keep title / description in sync when navigating without a page load.
+  useEffect(() => {
+    const route = findRoute(path);
+    document.title = route ? route.title : NOT_FOUND_META.title;
+    document
+      .querySelector('meta[name="description"]')
+      ?.setAttribute("content", route ? route.description : NOT_FOUND_META.description);
+    document
+      .querySelector('link[rel="canonical"]')
+      ?.setAttribute("href", `https://dsr-web.pages.dev${path === "/" ? "/" : path}`);
+  }, [path]);
 
   return (
     <div className="app-shell">
       <header className="app-header">
-        <a href="#check" className="brand">
+        <a href="/" className="brand">
           Backtest Overfitting Calculator
         </a>
         <nav>
-          <a href="#check" className={route === "check" ? "active" : ""}>
-            Backtest check
-          </a>
-          <a href="#calculator" className={route === "calculator" ? "active" : ""}>
-            Calculator
-          </a>
-          <a href="#article" className={route === "article" ? "active" : ""}>
-            Why your backtest is probably lying
-          </a>
+          {ROUTES.map((r) => (
+            <a key={r.path} href={r.path} className={path === r.path ? "active" : ""}>
+              {r.label}
+            </a>
+          ))}
         </nav>
       </header>
 
-      <main className="app-main">{route === "article" ? <ArticlePage /> : route === "calculator" ? <CalculatorPage /> : <CheckPage />}</main>
+      <main className="app-main">
+        <PageFor path={path} />
+      </main>
 
       <footer className="app-footer">
         <p>

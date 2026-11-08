@@ -30,3 +30,7 @@ __pycache__/
 *.njsproj
 *.sln
 *.sw?
+
+dist-ssr
+.wrangler
+.dev.vars
