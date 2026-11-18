@@ -228,7 +228,7 @@ function callDsrFromStats(args: Record<string, unknown>) {
   }
 
   return {
-    content: [{ type: "text", text: summaryText(result, result.benchmarkSRAnnualized, `${SITE_URL}/calculator`, "Calculator with the same inputs") }],
+    content: [{ type: "text", text: summaryText(result, result.benchmarkSRAnnualized, `${SITE_URL}/calculator`, "Try other numbers in the calculator") }],
     structuredContent: { ...result },
   };
 }
