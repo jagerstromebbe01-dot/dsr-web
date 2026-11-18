@@ -21,6 +21,8 @@ export interface RouteMeta {
   path: string;
   /** Short label for the nav bar. */
   label: string;
+  /** Show in the top navigation (the privacy page is linked from the footer instead). */
+  inNav: boolean;
   title: string;
   description: string;
 }
@@ -29,6 +31,7 @@ export const ROUTES: RouteMeta[] = [
   {
     path: "/",
     label: "Backtest check",
+    inNav: true,
     title: "Is My Backtest Overfit? Free Deflated Sharpe Ratio Check",
     description:
       "Paste your backtest returns and the number of strategies you tried. Get a green / yellow / red answer on whether your Sharpe ratio is probably real or just luck, using the Deflated Sharpe Ratio. Runs in your browser.",
@@ -36,6 +39,7 @@ export const ROUTES: RouteMeta[] = [
   {
     path: "/calculator",
     label: "Calculator",
+    inNav: true,
     title: "Deflated Sharpe Ratio Calculator — Backtest Overfitting",
     description:
       "Free Deflated Sharpe Ratio (DSR) calculator. Find out how much of your backtest's Sharpe ratio survives correcting for how many strategies you tried. Runs entirely in your browser.",
@@ -43,6 +47,7 @@ export const ROUTES: RouteMeta[] = [
   {
     path: "/article",
     label: "Why your backtest is probably lying",
+    inNav: true,
     title: "Why Your Backtest Is Probably Lying — Backtest Overfitting Explained",
     description:
       "Why the best backtest out of many is usually luck, how the Deflated Sharpe Ratio corrects for it, and a worked example with real numbers.",
@@ -50,9 +55,18 @@ export const ROUTES: RouteMeta[] = [
   {
     path: "/api",
     label: "API",
+    inNav: true,
     title: "Backtest Check API — Free Deflated Sharpe Ratio JSON API",
     description:
       "Free JSON API that checks whether a backtest's Sharpe ratio is probably real or luck, using the Deflated Sharpe Ratio. curl and Python examples. No API key.",
+  },
+  {
+    path: "/privacy",
+    label: "Privacy",
+    inNav: false,
+    title: "Privacy Policy — Backtest Overfitting Calculator",
+    description:
+      "What happens to your data: calculations run in your browser; share links, the API and the MCP server process data in memory and never store or log it. No cookies, no accounts.",
   },
 ];
 

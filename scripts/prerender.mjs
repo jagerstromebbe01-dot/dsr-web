@@ -10,7 +10,7 @@
 //   unknown     -> dist/404.html          (Pages answers unknown URLs with this + HTTP 404)
 // It also writes dist/sitemap.xml and dist/robots.txt; the domain comes from site.config.json.
 
-import { readFile, writeFile, rm } from "node:fs/promises";
+import { mkdir, readFile, writeFile, rm } from "node:fs/promises";
 import { pathToFileURL } from "node:url";
 import path from "node:path";
 
@@ -18,7 +18,7 @@ const root = path.resolve(import.meta.dirname, "..");
 const dist = path.join(root, "dist");
 const ssrDir = path.join(root, "dist-ssr");
 
-const { render, ROUTES, headTagsFor } = await import(pathToFileURL(path.join(ssrDir, "entry-server.js")).href);
+const { render, ROUTES, SITE_URL, headTagsFor, buildServerJson } = await import(pathToFileURL(path.join(ssrDir, "entry-server.js")).href);
 
 const template = await readFile(path.join(dist, "index.html"), "utf8");
 if (!template.includes("<!--head-->") || !template.includes("<!--app-->")) {
@@ -41,7 +41,7 @@ for (const route of ROUTES) {
 await writeFile(path.join(dist, "404.html"), page("/__not-found__"));
 console.log("prerendered 404 -> dist/404.html");
 
-const site = JSON.parse(await readFile(path.join(root, "site.config.json"), "utf8")).siteUrl.replace(/\/+$/, "");
+const site = SITE_URL;
 const urls = ROUTES.map((r) => `  <url><loc>${site}${r.path === "/" ? "/" : r.path}</loc></url>`).join("\n");
 await writeFile(
   path.join(dist, "sitemap.xml"),
@@ -63,5 +63,13 @@ await writeFile(
   ].join("\n"),
 );
 console.log("wrote dist/robots.txt");
+
+// MCP registry metadata, discoverable at /.well-known/mcp/server.json
+await mkdir(path.join(dist, ".well-known", "mcp"), { recursive: true });
+await writeFile(
+  path.join(dist, ".well-known", "mcp", "server.json"),
+  JSON.stringify(buildServerJson(SITE_URL), null, 2) + "\n",
+);
+console.log("wrote dist/.well-known/mcp/server.json");
 
 await rm(ssrDir, { recursive: true, force: true });

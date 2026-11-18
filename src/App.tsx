@@ -3,6 +3,7 @@ import { CheckPage } from "./pages/CheckPage";
 import { CalculatorPage } from "./pages/CalculatorPage";
 import { ArticlePage } from "./pages/ArticlePage";
 import { ApiPage } from "./pages/ApiPage";
+import { PrivacyPage } from "./pages/PrivacyPage";
 import { NotFoundPage } from "./pages/NotFoundPage";
 import { LEGACY_HASHES, NOT_FOUND_META, ROUTES, SITE_URL, findRoute, normalizePath } from "./routes";
 import "./App.css";
@@ -17,6 +18,8 @@ function PageFor({ path }: { path: string }) {
       return <ArticlePage />;
     case "/api":
       return <ApiPage />;
+    case "/privacy":
+      return <PrivacyPage />;
     default:
       return <NotFoundPage />;
   }
@@ -77,7 +80,7 @@ function App({ initialPath }: { initialPath: string }) {
           Backtest Overfitting Calculator
         </a>
         <nav>
-          {ROUTES.map((r) => (
+          {ROUTES.filter((r) => r.inNav).map((r) => (
             <a key={r.path} href={r.path} className={path === r.path ? "active" : ""}>
               {r.label}
             </a>
@@ -93,8 +96,9 @@ function App({ initialPath }: { initialPath: string }) {
         <p>
           Your numbers stay in your browser. All calculations run locally in JavaScript — nothing you enter is sent
           to a server or stored, with one exception: if you click “Copy share link” or “Copy README badge”, your
-          returns are sent once so the server can sign the result (not stored, not logged). The public API works the
-          same way. No cookies. We only count anonymous page views (Cloudflare Web Analytics).
+          returns are sent once so the server can sign the result (not stored, not logged). The public API and the MCP
+          server work the same way. No cookies. We only count anonymous page views (Cloudflare Web Analytics).{" "}
+          <a href="/privacy">Privacy policy</a>
         </p>
       </footer>
     </div>

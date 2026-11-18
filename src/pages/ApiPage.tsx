@@ -111,6 +111,15 @@ export function ApiPage() {
         a link that is altered or unsigned is shown as <em>unverified</em>.
       </p>
 
+      <h2>MCP server for AI assistants</h2>
+      <p>
+        The same check is available to ChatGPT, Claude and other AI assistants through the Model Context Protocol
+        (MCP). Server URL (Streamable HTTP, no sign-in): <code>{SITE_URL}/mcp</code>. Two read-only tools:{" "}
+        <code>check_backtest</code> (from a return series) and <code>dsr_from_stats</code> (from a Sharpe ratio, number
+        of observations and number of strategies tried). See the <a href="/privacy">privacy policy</a> for how data is
+        handled.
+      </p>
+
       <h2>Errors</h2>
       <ul>
         <li>
