@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { runBacktestCheck } from "../../src/lib/check";
 import { handleCheck, RateLimiter } from "./checkApi";
+import { SITE_URL } from "../../src/routes";
 import { handleBadge, handleResultPage, renderBadge } from "./shareApi";
 
 const env = { SHARE_SECRET: "test-secret-do-not-use" };
@@ -24,8 +25,10 @@ const get = (url: string) => new Request(url);
 describe("API share fields", () => {
   it("returns shareUrl and badgeMarkdown when SHARE_SECRET is set", async () => {
     const body = await getLinks();
-    expect(body.shareUrl).toMatch(/^https:\/\/dsr\.test\/r\?dsr=.*&sig=[A-Za-z0-9_-]{43}$/);
-    expect(body.badgeMarkdown).toMatch(/^\[!\[DSR check\]\(https:\/\/dsr\.test\/badge\.svg\?.*&sig=.*\)\]\(https:\/\/dsr\.test\/r\?.*\)$/);
+    expect(body.shareUrl.startsWith(`${SITE_URL}/r?dsr=`)).toBe(true);
+    expect(body.shareUrl).toMatch(/&sig=[A-Za-z0-9_-]{43}$/);
+    expect(body.badgeMarkdown.startsWith(`[![DSR check](${SITE_URL}/badge.svg?`)).toBe(true);
+    expect(body.badgeMarkdown).toContain(`](${SITE_URL}/r?`);
   });
 
   it("the shared link never contains the return series", async () => {

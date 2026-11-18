@@ -12,6 +12,7 @@ import { DSR_TIER_COLORS } from "../../src/lib/color";
 import { buildSignedQuery, checkSignedParams, summaryFromResult } from "../../src/lib/share";
 import type { LinkStatus, ShareSummary, SummarySource } from "../../src/lib/share";
 import type { Verdict } from "../../src/lib/thresholds";
+import { SITE_URL } from "../../src/routes";
 import type { Env } from "./checkApi";
 
 const VERDICT_WORDS: Record<Verdict, { title: string; short: string }> = {
@@ -27,6 +28,13 @@ function esc(s: string): string {
 }
 
 const pct = (dsr: number) => `${(dsr * 100).toFixed(1)}%`;
+
+/** Base address for links we hand out: the configured site address, except
+ * on localhost (so local testing with wrangler produces working local links). */
+export function publicBaseUrl(requestUrl: string): string {
+  const u = new URL(requestUrl);
+  return u.hostname === "localhost" || u.hostname === "127.0.0.1" ? u.origin : SITE_URL;
+}
 
 /** Builds the signed links the API hands out. Returns nulls when no secret is configured. */
 export async function buildShareLinks(
@@ -171,7 +179,7 @@ ${body}
 export async function handleResultPage(request: Request, env: Env): Promise<Response> {
   const url = new URL(request.url);
   const link = await checkSignedParams(env.SHARE_SECRET, url.searchParams);
-  return new Response(renderResultPage(link, url.origin), {
+  return new Response(renderResultPage(link, publicBaseUrl(request.url)), {
     status: 200,
     headers: {
       "Content-Type": "text/html; charset=utf-8",

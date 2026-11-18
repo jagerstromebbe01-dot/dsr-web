@@ -10,7 +10,7 @@
 import { CheckInputError, runBacktestCheck } from "../../src/lib/check";
 import type { CheckResult } from "../../src/lib/check";
 import type { DataFrequency } from "../../src/lib/dsr";
-import { buildShareLinks } from "./shareApi";
+import { buildShareLinks, publicBaseUrl } from "./shareApi";
 
 export interface Env {
   /** HMAC key for signed share links / badges (Cloudflare secret). */
@@ -198,7 +198,7 @@ export async function handleCheck(
     return errorResponse(500, "Unexpected error while calculating.");
   }
 
-  const links = await buildShareLinks(new URL(request.url).origin, env, result);
+  const links = await buildShareLinks(publicBaseUrl(request.url), env, result);
   const body: CheckResponseBody = { ...result, ...links };
   return jsonResponse(body);
 }

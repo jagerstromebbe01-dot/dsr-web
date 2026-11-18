@@ -4,7 +4,15 @@
  * prerenderer (<head> tags, sitemap.xml) and nothing else.
  */
 
-export const SITE_URL = "https://dsr-web.pages.dev";
+import siteConfig from "../site.config.json";
+
+/**
+ * THE site address. It is defined once, in site.config.json (repo root).
+ * Moving to your own domain = change that one value and redeploy: canonical
+ * links, Open Graph tags, sitemap.xml, robots.txt, API examples and the
+ * share links / badges all follow it.
+ */
+export const SITE_URL: string = siteConfig.siteUrl.replace(/\/+$/, "");
 export const OG_IMAGE = `${SITE_URL}/og-image.png`;
 
 export interface RouteMeta {

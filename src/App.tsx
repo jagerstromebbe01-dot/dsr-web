@@ -4,7 +4,7 @@ import { CalculatorPage } from "./pages/CalculatorPage";
 import { ArticlePage } from "./pages/ArticlePage";
 import { ApiPage } from "./pages/ApiPage";
 import { NotFoundPage } from "./pages/NotFoundPage";
-import { LEGACY_HASHES, NOT_FOUND_META, ROUTES, findRoute, normalizePath } from "./routes";
+import { LEGACY_HASHES, NOT_FOUND_META, ROUTES, SITE_URL, findRoute, normalizePath } from "./routes";
 import "./App.css";
 
 function PageFor({ path }: { path: string }) {
@@ -67,7 +67,7 @@ function App({ initialPath }: { initialPath: string }) {
       ?.setAttribute("content", route ? route.description : NOT_FOUND_META.description);
     document
       .querySelector('link[rel="canonical"]')
-      ?.setAttribute("href", `https://dsr-web.pages.dev${path === "/" ? "/" : path}`);
+      ?.setAttribute("href", `${SITE_URL}${path === "/" ? "/" : path}`);
   }, [path]);
 
   return (

@@ -1,4 +1,6 @@
-const CURL_EXAMPLE = `curl -X POST https://dsr-web.pages.dev/api/check \\
+import { SITE_URL } from "../routes";
+
+const CURL_EXAMPLE = `curl -X POST ${SITE_URL}/api/check \\
   -H "Content-Type: application/json" \\
   -d '{
     "returns": [0.012, -0.004, 0.007, 0.001, -0.009, 0.015, 0.003, -0.002],
@@ -12,7 +14,7 @@ const PYTHON_EXAMPLE = `import requests
 returns = [0.012, -0.004, 0.007, 0.001, -0.009, 0.015, 0.003, -0.002]
 
 resp = requests.post(
-    "https://dsr-web.pages.dev/api/check",
+    "${SITE_URL}/api/check",
     json={"returns": returns, "frequency": "daily", "n": 20},
     timeout=30,
 )
@@ -36,8 +38,8 @@ const RESPONSE_EXAMPLE = `{
   "benchmarkSR": 0.085,
   "periodsPerYear": 252,
   "warnings": ["V (the spread of Sharpe ratios ...) is estimated ..."],
-  "shareUrl": "https://dsr-web.pages.dev/r?dsr=0.1010&verdict=red&...&sig=...",
-  "badgeMarkdown": "[![DSR check](https://dsr-web.pages.dev/badge.svg?...)](https://dsr-web.pages.dev/r?...)"
+  "shareUrl": "${SITE_URL}/r?dsr=0.1010&verdict=red&...&sig=...",
+  "badgeMarkdown": "[![DSR check](${SITE_URL}/badge.svg?...)](${SITE_URL}/r?...)"
 }`;
 
 export function ApiPage() {
@@ -56,7 +58,7 @@ export function ApiPage() {
 
       <h2>Request</h2>
       <p>
-        <code>POST https://dsr-web.pages.dev/api/check</code> with a JSON body:
+        <code>POST {SITE_URL}/api/check</code> with a JSON body:
       </p>
       <ul>
         <li>
