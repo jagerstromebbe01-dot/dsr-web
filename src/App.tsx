@@ -4,6 +4,7 @@ import { CalculatorPage } from "./pages/CalculatorPage";
 import { ArticlePage } from "./pages/ArticlePage";
 import { ApiPage } from "./pages/ApiPage";
 import { PrivacyPage } from "./pages/PrivacyPage";
+import { TermsPage } from "./pages/TermsPage";
 import { NotFoundPage } from "./pages/NotFoundPage";
 import { LEGACY_HASHES, NOT_FOUND_META, ROUTES, SITE_URL, findRoute, normalizePath } from "./routes";
 import "./App.css";
@@ -20,6 +21,8 @@ function PageFor({ path }: { path: string }) {
       return <ApiPage />;
     case "/privacy":
       return <PrivacyPage />;
+    case "/terms":
+      return <TermsPage />;
     default:
       return <NotFoundPage />;
   }
@@ -98,7 +101,7 @@ function App({ initialPath }: { initialPath: string }) {
           to a server or stored, with one exception: if you click “Copy share link” or “Copy README badge”, your
           returns are sent once so the server can sign the result (not stored, not logged). The public API and the MCP
           server work the same way. No cookies. We only count anonymous page views (Cloudflare Web Analytics).{" "}
-          <a href="/privacy">Privacy policy</a>
+          <a href="/privacy">Privacy policy</a> · <a href="/terms">Terms of use</a>
         </p>
       </footer>
     </div>

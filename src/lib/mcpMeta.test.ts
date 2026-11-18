@@ -27,10 +27,12 @@ describe("server.json (official MCP registry schema 2025-12-11)", () => {
   });
 });
 
-describe("privacy page is a real route", () => {
-  it("is in the sitemap routes but not the top nav", () => {
-    const privacy = ROUTES.find((r) => r.path === "/privacy");
-    expect(privacy).toBeDefined();
-    expect(privacy?.inNav).toBe(false);
+describe("privacy and terms pages are real routes", () => {
+  it("are in the sitemap routes but not the top nav", () => {
+    for (const path of ["/privacy", "/terms"]) {
+      const route = ROUTES.find((r) => r.path === path);
+      expect(route, path).toBeDefined();
+      expect(route?.inNav).toBe(false);
+    }
   });
 });

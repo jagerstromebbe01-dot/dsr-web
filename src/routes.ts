@@ -68,6 +68,14 @@ export const ROUTES: RouteMeta[] = [
     description:
       "What happens to your data: calculations run in your browser; share links, the API and the MCP server process data in memory and never store or log it. No cookies, no accounts.",
   },
+  {
+    path: "/terms",
+    label: "Terms",
+    inNav: false,
+    title: "Terms of Use — Backtest Overfitting Calculator",
+    description:
+      "Free educational tool, not financial advice. No warranty or liability, fair use of the API and MCP server, and how the terms can change.",
+  },
 ];
 
 export const NOT_FOUND_META = {
