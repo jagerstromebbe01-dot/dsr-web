@@ -13,6 +13,8 @@ import siteConfig from "../site.config.json";
  * share links / badges all follow it.
  */
 export const SITE_URL: string = siteConfig.siteUrl.replace(/\/+$/, "");
+/** Where people can reach the maintainer (shown on the privacy page). */
+export const CONTACT_URL: string = siteConfig.contactUrl;
 export const OG_IMAGE = `${SITE_URL}/og-image.png`;
 
 export interface RouteMeta {

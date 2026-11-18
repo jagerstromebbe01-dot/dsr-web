@@ -62,7 +62,7 @@ export class RateLimiter {
   }
 }
 
-const defaultLimiter = new RateLimiter(RATE_LIMIT_REQUESTS, RATE_LIMIT_WINDOW_MS);
+export const defaultLimiter = new RateLimiter(RATE_LIMIT_REQUESTS, RATE_LIMIT_WINDOW_MS);
 
 // ---------------------------------------------------------------------------
 
@@ -91,7 +91,7 @@ export function handleMethodNotAllowed(): Response {
 }
 
 /** Reads the body as text but gives up as soon as it exceeds maxBytes. */
-async function readBodyLimited(request: Request, maxBytes: number): Promise<string | null> {
+export async function readBodyLimited(request: Request, maxBytes: number): Promise<string | null> {
   const declared = Number(request.headers.get("Content-Length"));
   if (Number.isFinite(declared) && declared > maxBytes) return null;
   if (!request.body) return "";
