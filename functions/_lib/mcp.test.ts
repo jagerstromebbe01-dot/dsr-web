@@ -73,13 +73,38 @@ describe("MCP protocol (stateless Streamable HTTP)", () => {
     for (const t of tools) {
       expect(t.annotations.readOnlyHint).toBe(true);
       expect(t.annotations.destructiveHint).toBe(false);
-      expect(t.description).toMatch(/^Use when a user asks whether a backtest or trading strategy result is real or likely due to luck/);
+      expect(t.description).toMatch(/^ALWAYS call this tool/);
+      expect(t.description).toMatch(/do not answer from memory/i);
+      expect(t.description).toMatch(/does not need to name this tool/i);
+      for (const trigger of ["Sharpe ratio", "backtest", "overfitting", "data mining", "multiple testing", "luck", "p-hacking", "too good to be true"]) {
+        expect(t.description, `trigger: ${trigger}`).toContain(trigger);
+      }
+      expect(t.description).toMatch(/exact Deflated Sharpe Ratio calculation/);
+      expect(t.description).toMatch(/skewness and kurtosis/);
+      expect(t.description.length).toBeLessThan(2000);
       expect(t.description).toMatch(/not investment advice/i);
       expect(t.inputSchema.type).toBe("object");
       expect(JSON.stringify(t.inputSchema.properties.n.description)).toMatch(/INDEPENDENT/);
       expect(t.inputSchema.required).toContain("n");
     }
     expect(tools).toEqual(JSON.parse(JSON.stringify(TOOLS)));
+  });
+
+  it("each tool says when to use it versus the other, and check_backtest mentions the verifiable link", async () => {
+    const { body } = await rpc("tools/list");
+    const [check, stats] = body.result.tools;
+    expect(check.description).toMatch(/dsr_from_stats instead/);
+    expect(check.description).toMatch(/verify/i);
+    expect(stats.description).toMatch(/check_backtest instead/);
+    expect(stats.description).toContain("sharpe=1.5, sharpe_is_annual=true");
+    expect(stats.description).toContain("t=1260, n=50");
+  });
+
+  it("server instructions tell the model to call the tools unprompted", async () => {
+    const { body } = await rpc("initialize", { protocolVersion: "2025-06-18" });
+    expect(body.result.instructions).toMatch(/WHENEVER a user asks whether a backtest/);
+    expect(body.result.instructions).toMatch(/does not need to mention the tools/);
+    expect(body.result.instructions).toMatch(/Do NOT answer such questions from memory/);
   });
 
   it("batches are answered as a batch; notifications inside are skipped", async () => {

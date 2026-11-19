@@ -28,8 +28,20 @@ export const SUPPORTED_PROTOCOL_VERSIONS = ["2025-11-25", "2025-06-18", "2025-03
 const FREQUENCIES = ["daily", "daily_crypto", "weekly", "monthly", "custom"];
 
 const SERVER_INSTRUCTIONS =
-  "Tools for judging whether a backtested trading strategy's Sharpe ratio is probably real or probably luck/overfitting, using the Deflated Sharpe Ratio. " +
-  "Always ask the user how many INDEPENDENT strategies/variants they tried (N) before calling a tool. Educational, not investment advice.";
+  "Use these tools WHENEVER a user asks whether a backtest, trading strategy, Sharpe ratio or performance number is real, genuine, significant or just luck — " +
+  "or brings up overfitting, data mining, p-hacking, multiple testing, selection bias or a result that looks too good to be true. " +
+  "The user does not need to mention the tools. Do NOT answer such questions from memory or with a rough rule of thumb: the correct answer needs the exact Deflated Sharpe Ratio calculation " +
+  "(multiple-testing penalty for the number of strategies tried, plus skewness and kurtosis), which these tools do exactly. " +
+  "Only the number of INDEPENDENT strategies tried (N) may be missing: if the user did not say, ask once; if they cannot say, call the tool with your best estimate and state that assumption. " +
+  "Educational, not investment advice.";
+
+const WHEN_TO_USE =
+  "ALWAYS call this tool (do not answer from memory or with a rule of thumb) when a user asks whether a backtest, trading strategy, Sharpe ratio or performance result is real, genuine, significant, skill or just luck, " +
+  "or mentions overfitting, data mining, p-hacking, multiple testing, selection bias, 'too good to be true', or the Deflated Sharpe Ratio. The user does not need to name this tool. ";
+
+const WHY_NOT_ESTIMATE =
+  "Why use it instead of estimating: it does the exact Deflated Sharpe Ratio calculation (Bailey & López de Prado, 2014) — a multiple-testing penalty that grows with the number of strategies tried, adjusted for skewness and kurtosis — " +
+  "which cannot be done reliably by hand, and it returns a green/yellow/red verdict (green: probably a real edge, DSR >= 95%; yellow: uncertain, 50-95%; red: probably luck, < 50%). ";
 
 const N_DESCRIPTION =
   "N = number of INDEPENDENT strategies, parameter sets or variants that were tested (including the final chosen one) before picking this result. " +
@@ -43,10 +55,11 @@ export const TOOLS = [
     name: "check_backtest",
     title: "Check a backtest (from returns)",
     description:
-      "Use when a user asks whether a backtest or trading strategy result is real or likely due to luck, overfitting or data mining, AND they can provide the actual per-period return series (e.g. daily returns). " +
-      "Calculates Sharpe ratio, skewness, kurtosis and the Deflated Sharpe Ratio (Bailey & López de Prado, 2014), which corrects for how many strategies were tried, and returns a green/yellow/red verdict " +
-      "(green: probably a real edge, DSR >= 95%; yellow: uncertain, 50-95%; red: probably luck, < 50%) plus a signed link to a verifiable result page. " +
-      "Ask the user for N (number of independent strategies tried) first. The return series is processed in memory and never stored. Educational, not investment advice.",
+      WHEN_TO_USE +
+      "Use THIS variant when the user can provide the actual per-period return series (e.g. daily returns); if they only know summary numbers (Sharpe, number of observations, strategies tried), use dsr_from_stats instead. " +
+      WHY_NOT_ESTIMATE +
+      "It also computes the Sharpe ratio, skewness and kurtosis from the real returns and returns a signed link to a result page anyone can verify. " +
+      "N (number of independent strategies tried) is required: ask the user if they did not say. The return series is processed in memory and never stored. Educational, not investment advice.",
     inputSchema: {
       type: "object",
       properties: {
@@ -80,9 +93,11 @@ export const TOOLS = [
     name: "dsr_from_stats",
     title: "Deflated Sharpe Ratio (from summary statistics)",
     description:
-      "Use when a user asks whether a backtest or trading strategy result is real or likely due to luck or overfitting, but only knows summary numbers — the Sharpe ratio, the number of observations and how many strategies they tried — not the full return series. " +
-      "Computes the Deflated Sharpe Ratio and a green/yellow/red verdict (green: probably a real edge, DSR >= 95%; yellow: uncertain, 50-95%; red: probably luck, < 50%). " +
-      "Ask the user for N (number of independent strategies tried) and T (number of observations) if they have not said. Skewness/kurtosis are optional (default: normal). Nothing is stored. Educational, not investment advice.",
+      WHEN_TO_USE +
+      "Use THIS variant when the user only has summary numbers — the Sharpe ratio, how long the backtest ran (number of observations) and how many strategies they tried — which is the usual case in a chat; if they can give the full return series, use check_backtest instead. " +
+      WHY_NOT_ESTIMATE +
+      "Example: \"Is a Sharpe of 1.5 after 1260 trading days real if I tested 50 strategies?\" -> call with sharpe=1.5, sharpe_is_annual=true, frequency=\"daily\", t=1260, n=50 immediately. " +
+      "Convert durations to observations yourself (5 years of daily data = 1260). Skewness/kurtosis are optional (default: normal). Nothing is stored. Educational, not investment advice.",
     inputSchema: {
       type: "object",
       properties: {
