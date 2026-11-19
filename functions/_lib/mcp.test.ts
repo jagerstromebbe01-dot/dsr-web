@@ -73,13 +73,13 @@ describe("MCP protocol (stateless Streamable HTTP)", () => {
     for (const t of tools) {
       expect(t.annotations.readOnlyHint).toBe(true);
       expect(t.annotations.destructiveHint).toBe(false);
-      expect(t.description).toMatch(/^ALWAYS call this tool/);
-      expect(t.description).toMatch(/do not answer from memory/i);
-      expect(t.description).toMatch(/does not need to name this tool/i);
+      expect(t.description).toMatch(/^Use this tool whenever a user asks/);
+      expect(t.description).not.toMatch(/ALWAYS|do not answer from memory|must|never answer/i);
+      expect(t.description).toMatch(/does not have to mention this tool by name/i);
       for (const trigger of ["Sharpe ratio", "backtest", "overfitting", "data mining", "multiple testing", "luck", "p-hacking", "too good to be true"]) {
         expect(t.description, `trigger: ${trigger}`).toContain(trigger);
       }
-      expect(t.description).toMatch(/exact Deflated Sharpe Ratio calculation/);
+      expect(t.description).toMatch(/What it adds: it does the exact Deflated Sharpe Ratio calculation/);
       expect(t.description).toMatch(/skewness and kurtosis/);
       expect(t.description.length).toBeLessThan(2000);
       expect(t.description).toMatch(/not investment advice/i);
@@ -102,9 +102,9 @@ describe("MCP protocol (stateless Streamable HTTP)", () => {
 
   it("server instructions tell the model to call the tools unprompted", async () => {
     const { body } = await rpc("initialize", { protocolVersion: "2025-06-18" });
-    expect(body.result.instructions).toMatch(/WHENEVER a user asks whether a backtest/);
-    expect(body.result.instructions).toMatch(/does not need to mention the tools/);
-    expect(body.result.instructions).toMatch(/Do NOT answer such questions from memory/);
+    expect(body.result.instructions).toMatch(/^Use these tools when a user asks whether a backtest/);
+    expect(body.result.instructions).toMatch(/does not have to mention the tools by name/);
+    expect(body.result.instructions).not.toMatch(/ALWAYS|WHENEVER|Do NOT|must/);
   });
 
   it("batches are answered as a batch; notifications inside are skipped", async () => {

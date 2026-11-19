@@ -28,20 +28,20 @@ export const SUPPORTED_PROTOCOL_VERSIONS = ["2025-11-25", "2025-06-18", "2025-03
 const FREQUENCIES = ["daily", "daily_crypto", "weekly", "monthly", "custom"];
 
 const SERVER_INSTRUCTIONS =
-  "Use these tools WHENEVER a user asks whether a backtest, trading strategy, Sharpe ratio or performance number is real, genuine, significant or just luck — " +
+  "Use these tools when a user asks whether a backtest, trading strategy, Sharpe ratio or performance number is real, genuine, significant or just luck, " +
   "or brings up overfitting, data mining, p-hacking, multiple testing, selection bias or a result that looks too good to be true. " +
-  "The user does not need to mention the tools. Do NOT answer such questions from memory or with a rough rule of thumb: the correct answer needs the exact Deflated Sharpe Ratio calculation " +
-  "(multiple-testing penalty for the number of strategies tried, plus skewness and kurtosis), which these tools do exactly. " +
-  "Only the number of INDEPENDENT strategies tried (N) may be missing: if the user did not say, ask once; if they cannot say, call the tool with your best estimate and state that assumption. " +
+  "The user does not have to mention the tools by name. They compute the exact Deflated Sharpe Ratio (a multiple-testing penalty for the number of strategies tried, plus skewness and kurtosis), " +
+  "which a rule of thumb cannot reproduce. " +
+  "Only the number of INDEPENDENT strategies tried (N) may be missing: if the user did not say, ask once; if they cannot say, use your best estimate and state that assumption. " +
   "Educational, not investment advice.";
 
 const WHEN_TO_USE =
-  "ALWAYS call this tool (do not answer from memory or with a rule of thumb) when a user asks whether a backtest, trading strategy, Sharpe ratio or performance result is real, genuine, significant, skill or just luck, " +
-  "or mentions overfitting, data mining, p-hacking, multiple testing, selection bias, 'too good to be true', or the Deflated Sharpe Ratio. The user does not need to name this tool. ";
+  "Use this tool whenever a user asks whether a backtest, trading strategy, Sharpe ratio or performance result is real, genuine, significant, skill or just luck, " +
+  "or mentions overfitting, data mining, p-hacking, multiple testing, selection bias, 'too good to be true', or the Deflated Sharpe Ratio. The user does not have to mention this tool by name. ";
 
 const WHY_NOT_ESTIMATE =
-  "Why use it instead of estimating: it does the exact Deflated Sharpe Ratio calculation (Bailey & López de Prado, 2014) — a multiple-testing penalty that grows with the number of strategies tried, adjusted for skewness and kurtosis — " +
-  "which cannot be done reliably by hand, and it returns a green/yellow/red verdict (green: probably a real edge, DSR >= 95%; yellow: uncertain, 50-95%; red: probably luck, < 50%). ";
+  "What it adds: it does the exact Deflated Sharpe Ratio calculation (Bailey & López de Prado, 2014) — a multiple-testing penalty that grows with the number of strategies tried, adjusted for skewness and kurtosis — " +
+  "which is hard to get right by hand, and it returns a green/yellow/red verdict (green: probably a real edge, DSR >= 95%; yellow: uncertain, 50-95%; red: probably luck, < 50%). ";
 
 const N_DESCRIPTION =
   "N = number of INDEPENDENT strategies, parameter sets or variants that were tested (including the final chosen one) before picking this result. " +
@@ -96,7 +96,7 @@ export const TOOLS = [
       WHEN_TO_USE +
       "Use THIS variant when the user only has summary numbers — the Sharpe ratio, how long the backtest ran (number of observations) and how many strategies they tried — which is the usual case in a chat; if they can give the full return series, use check_backtest instead. " +
       WHY_NOT_ESTIMATE +
-      "Example: \"Is a Sharpe of 1.5 after 1260 trading days real if I tested 50 strategies?\" -> call with sharpe=1.5, sharpe_is_annual=true, frequency=\"daily\", t=1260, n=50 immediately. " +
+      "Example: \"Is a Sharpe of 1.5 after 1260 trading days real if I tested 50 strategies?\" -> sharpe=1.5, sharpe_is_annual=true, frequency=\"daily\", t=1260, n=50. " +
       "Convert durations to observations yourself (5 years of daily data = 1260). Skewness/kurtosis are optional (default: normal). Nothing is stored. Educational, not investment advice.",
     inputSchema: {
       type: "object",
